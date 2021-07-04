@@ -12,4 +12,8 @@ This should not be expected to be a polished project, but rather a coding equiva
 2 -- checked python installed properly and path worked 
 3 -- installed pygame
 
-![windows power shell](./assets/WindowsPowerShellPython.png)
+![windows power shell : python -enter key- pip install pygame -enter key-](./assets/WindowsPowerShellPython.png)
+
+W3Schools has a section on python https://www.w3schools.com/python/
+
+**Indentation IS important to python. Functions and conditional statements use indentation NOT brackets to indicate inclusivity**
