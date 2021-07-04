@@ -3,7 +3,8 @@ pygame.init()
 #Game code goes between pygame init and quit
 
 #Creates a window in pixels -- will need to see if something like rem, em, vh works
-#We diplay constantly but we only create the window once!
+#We diplay constantly but we only create the window once! So All creation happens outside the function
+# and everything we want maintained and displayed happens inside the function
 width = 800
 height = 600
 game_window = pygame.display.set_mode((width,height))
