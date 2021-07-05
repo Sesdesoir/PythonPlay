@@ -19,3 +19,5 @@ W3Schools has a section on python https://www.w3schools.com/python/
 **Indentation IS important to python. Functions and conditional statements use indentation NOT brackets to indicate inclusivity**
 
 **Naming convention for python is to use underscores instead of cammel case ie: i_love_waterbuffalo not iLoveWaterbuffalo the exception is with classes where you cammel case with a capital first letter ie: BabyKangaroo**
+
+This should be read main.py -> game.py -> player.py

@@ -10,3 +10,4 @@ game.run_game_loop()
 
 pygame.quit()
 quit()
+# quit() exits a python program.
