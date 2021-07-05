@@ -1,5 +1,5 @@
 import pygame
-
+    #Self is kinda like this. It references information related to itself/this specific object
 class Game:
     # __init__ is a special designation in a python class
     # def is the keyword used to create a custom function the colon : indicates the end of the defining and everything indented after is part of the function
