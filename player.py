@@ -9,6 +9,11 @@ class Player(GameObject):
         super().__init__(x, y, width, height, image_path)
 
         self.speed = speed
-    def move (self, direction):
-        #Up arrow key will be equivalent to 1 down arrow will be equivalent to -1
+
+    def move (self, direction, max_height):
+        # the and is important! We don't want to move off the screen, however we want to be allowed to move in other directions.
+        if (self.y >= max_height-self.height and direction >0) or (self.y == 0 and direction<0):
+            return
+    #Up arrow key will be equivalent to -1 down arrow will be equivalent to 1
+    #This is because (0.0) is the top left corner. Meaning 0 is the top and max height of 600 is the bottom
         self.y += (direction * self.speed)

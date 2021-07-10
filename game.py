@@ -1,6 +1,8 @@
 import pygame
 from gameObject import GameObject
 from player import Player
+from enemy import Enemy
+
     #Self is kinda like this. It references information related to itself/this specific object
 class Game:
     # __init__ is a special designation in a python class
@@ -15,10 +17,15 @@ class Game:
         self.game_window = pygame.display.set_mode((self.width,self.height))
                         #GameObject is a class we created in file gameObject.py
         self.background = GameObject(0,0, self.width, self.height, 'assets/background.png')
-
+                                      #   x , y,width,height, img path
         self.treasure_image = GameObject(375, 30, 50, 50, 'assets/treasure.png')
         #The 10 speed is 10 pixles per tick
         self.player = Player(375, 500 , 50 , 50, 'assets/player.png', 10)
+        self.enemies =[
+            Enemy(50, 425, 50, 50, 'assets/enemy.png', 10),
+            Enemy(750, 300, 50, 50, 'assets/enemy.png', 10),
+            Enemy(75, 175, 50, 50, 'assets/enemy.png', 10),
+        ]
         self.clock = pygame.time.Clock()
 
     def draw_objects(self):
@@ -28,8 +35,34 @@ class Game:
         self.game_window.blit(self.background.image , (self.background.x,self.background.y))
         self.game_window.blit(self.treasure_image.image , (self.treasure_image.x, self.treasure_image.y))
         self.game_window.blit(self.player.image, (self.player.x, self.player.y))
+        for enemy in self.enemies:
+            self.game_window.blit(enemy.image, (enemy.x, enemy.y))
         #Call update everytime you add draw or color the window
         pygame.display.update()
+
+    def detect_collision (self, object_1, object_2):
+        #Collision occurs when there is an overlap in sides or top in essence share (x,y) coordinate(s)
+        #This is written to state where collisions DON'T exist and then anything that passes these checks is therefore a collision.
+        # I did the +15 and -15. The blit picture has empty space around the image to be a square.
+        #I did the 15px so that the actual visual image is the vertical hitbox rather than the blit box.
+        if (object_1.y+15) > (object_2.y + object_2.height):
+            return False
+        elif (object_1.y + object_1.height-15) < object_2.y:
+            return False
+
+        if object_1.x > (object_2.x + object_2.width):
+            return False
+        elif (object_1.x + object_1.width) < object_2.x:
+            return False 
+        return True
+
+    def check_if_collided(self):
+        for enemy in self.enemies:
+            if self.detect_collision(self.player, enemy):
+                return True
+            if self.detect_collision(self.player, self.treasure_image):
+                return True
+        return False
 
     def run_game_loop(self):
         #function variable
@@ -44,18 +77,34 @@ class Game:
                     return
                 #elif is else if
                 elif event.type == pygame.KEYDOWN:
+                    #I had to split the direction keys up because or was creating interesting issues
+                    #paraenthesis did NOT fix the issues...they creating more interesting ones.
                     if event.key == pygame.K_UP:
+                        #Move player up
+                        player_direction= -1
+                    elif event.key == pygame.K_w:
                         #Move player up
                         player_direction= -1
                     elif event.key == pygame.K_DOWN:
                         #Move Player down
                         player_direction = 1
+                    elif event.key == pygame.K_s:
+                        #Move Player down
+                        player_direction = 1
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_UP or pygame.K_DOWN:
+                    if event.key == pygame.K_UP or pygame.K_DOWN or pygame.K_w or pygame.K_s:
                         player_direction=0
-                        
+            #Draws our images
             self.draw_objects()
+
+            #Detect Collisions...Calling before movement so you can't hypothetically dodge a collision due to loaging
+            # Closes the game window if a collision occurs in its current state.
+            if self.check_if_collided():
+                return
             #Calls the player class move function of object player created above.
-            self.player.move(player_direction)
+            self.player.move(player_direction, self.height)
+            #Calls enemy motion
+            for enemy in self.enemies:
+                enemy.move(self.width)
             #Runs 60 times per second --akin to 60fps Higher number =more demanding lower number = less demanding
             self.clock.tick(60)
