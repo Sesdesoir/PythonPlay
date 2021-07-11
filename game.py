@@ -19,14 +19,35 @@ class Game:
         self.background = GameObject(0,0, self.width, self.height, 'assets/background.png')
                                       #   x , y,width,height, img path
         self.treasure_image = GameObject(375, 30, 50, 50, 'assets/treasure.png')
+        
+
+        self.level = 1.0
+
+        self.clock = pygame.time.Clock()
+
+        self.reset_map()
+
+    def reset_map(self):
         #The 10 speed is 10 pixles per tick
         self.player = Player(375, 500 , 50 , 50, 'assets/player.png', 10)
-        self.enemies =[
-            Enemy(50, 425, 50, 50, 'assets/enemy.png', 10),
-            Enemy(750, 300, 50, 50, 'assets/enemy.png', 10),
-            Enemy(75, 175, 50, 50, 'assets/enemy.png', 10),
-        ]
-        self.clock = pygame.time.Clock()
+        speed = 5 + (self.level *5)
+        if self.level >= 4.0:
+            self.enemies =[
+            Enemy(50, 425, 50, 50, 'assets/enemy.png', speed),
+            Enemy(750, 300, 50, 50, 'assets/enemy.png', speed),
+            Enemy(75, 175, 50, 50, 'assets/enemy.png', speed),
+            ]
+        elif self.level >= 2.0:
+            self.enemies =[
+            Enemy(50, 400, 50, 50, 'assets/enemy.png', speed),
+            Enemy(75, 225, 50, 50, 'assets/enemy.png', speed),
+            ]
+        else:
+            self.enemies =[
+            Enemy(50, 400, 50, 50, 'assets/enemy.png', speed),
+            ]
+
+        
 
     def draw_objects(self):
         #The fill takes a tuple of r,g,b values (255,255,255) is white
@@ -59,9 +80,11 @@ class Game:
     def check_if_collided(self):
         for enemy in self.enemies:
             if self.detect_collision(self.player, enemy):
+                self.level = 1.0
                 return True
-            if self.detect_collision(self.player, self.treasure_image):
-                return True
+        if self.detect_collision(self.player, self.treasure_image):
+            self.level += 0.5
+            return True
         return False
 
     def run_game_loop(self):
@@ -77,18 +100,11 @@ class Game:
                     return
                 #elif is else if
                 elif event.type == pygame.KEYDOWN:
-                    #I had to split the direction keys up because or was creating interesting issues
-                    #paraenthesis did NOT fix the issues...they creating more interesting ones.
-                    if event.key == pygame.K_UP:
+                    #I couldn't use or after the equals (==) for up and down it produced... interesting results
+                    if event.key == pygame.K_UP or event.key == pygame.K_w:
                         #Move player up
                         player_direction= -1
-                    elif event.key == pygame.K_w:
-                        #Move player up
-                        player_direction= -1
-                    elif event.key == pygame.K_DOWN:
-                        #Move Player down
-                        player_direction = 1
-                    elif event.key == pygame.K_s:
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                         #Move Player down
                         player_direction = 1
                 elif event.type == pygame.KEYUP:
@@ -100,11 +116,12 @@ class Game:
             #Detect Collisions...Calling before movement so you can't hypothetically dodge a collision due to loaging
             # Closes the game window if a collision occurs in its current state.
             if self.check_if_collided():
-                return
+                self.reset_map()
             #Calls the player class move function of object player created above.
             self.player.move(player_direction, self.height)
             #Calls enemy motion
             for enemy in self.enemies:
                 enemy.move(self.width)
-            #Runs 60 times per second --akin to 60fps Higher number =more demanding lower number = less demanding
+            #Runs 60 times per second --akin to, but not the same as, 60fps. 
+            # Higher number =more demanding lower number = less demanding
             self.clock.tick(60)
